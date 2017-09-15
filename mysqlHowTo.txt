@@ -1,0 +1,15 @@
+Using MySQL with Cloud9
+This article explains our first iteration of MySQL support in Cloud9. It makes it super easy to install, start and stop a MySQL instance right in your workspace. The nice thing is that every workspace will run a separate database so your projects will never interfere with each other. You can control MySQL with the mysql-ctl command line tool run from the terminal:
+
+# start MySQL. Will create an empty database on first start
+$ mysql-ctl start
+
+# stop MySQL
+$ mysql-ctl stop
+
+# run the MySQL interactive shell
+$ mysql-ctl cli
+
+
+mysql> show databases;
+
