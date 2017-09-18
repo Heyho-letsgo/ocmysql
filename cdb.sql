@@ -56,10 +56,13 @@ INTO TABLE PERSON
 FIELDS TERMINATED BY ';' ENCLOSED BY ''
 LINES TERMINATED BY ''(PER_NOM,PER_NUM_TEL,PER_MAIL);
 
-create table if not exists LIBRARY (
-id smallint unsigned not null auto_increment, 
-LIB_Name varchar(40),
-primary key(id)
+DROP IF EXISTS LIBRARY;
+
+CREATE TABLE IF NOT EXISTS LIBRARY (
+ID smallint unsigned not null auto_increment, 
+LIB_Book_Name varchar(40),
+--LIB_Book_Person_Name varchar(40),
+primary key(ID)
 ) 
 engine=innodb;
 EXPLAIN LIBRARY;
@@ -87,7 +90,7 @@ EXPLAIN EMPLOYE;
 
 INSERT INTO 
 EMPLOYE (EMP_LastName, EMP_FirstName) 
-VALUES('Baudin-Laurencin','Charlotte'), ('Baudin-Laurencin', 'André'), ('David','Niven');
+VALUES('Baudin-Laurencin','Charlotte'), ('Baudin-Laurencin', 'André'), ('Niven','David');
 
 SELECT * FROM EMPLOYE;
 
@@ -126,3 +129,53 @@ SELECT * FROM CHAMBRE WHERE (CHA_NOMBRE = 7) OR (CHA_NOMBRE = 6) ORDER BY CHA_NO
 
 
 SOURCE piece.sql
+
+
+DROP TABLE IF EXISTS COMMANDE;
+
+CREATE TABLE IF NOT EXISTS COMMANDE (
+    ID INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    COM_PERSON_ID SMALLINT UNSIGNED NOT NULL,
+    COM_LIB_ID SMALLINT,
+    CONSTRAINT fk_PERSON_ID          -- On donne un nom à notre clé
+        FOREIGN KEY (COM_PERSON_ID)             -- Colonne sur laquelle on crée la clé
+        REFERENCES LIBRARY(ID)    -- Colonne de référence
+    )
+ENGINE=INNODB;                          -- MyISAM interdit, je le rappelle encore une fois !
+
+
+
+
+SHOW TABLES;
+EXPLAIN COMMANDE;
+
+
+INSERT INTO COMMANDE (COM_PERSON_ID,COM_LIB_ID)VALUES(1,1);
+
+SELECT * FROM COMMANDE WHERE (COM_PERSON_ID = 1);
+
+
+
+DROP TABLE IF EXISTS BORROW;
+CREATE TABLE IF NOT EXISTS BORROW (
+    ID smallint unsigned not null auto_increment, 
+    BOR_LastName varchar (40), 
+    BOR_FirstName varchar (40),
+    BOR_LIVRE varchar (40),
+    BOR_CREE_LE TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    BOR_MODIFIE_LE TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+    PRIMARY KEY(ID)
+    ) 
+engine = innodb;
+
+EXPLAIN BORROW;
+
+INSERT INTO 
+BORROW (BOR_LastName, BOR_FirstName, BOR_LIVRE) 
+VALUES('Baudin-Laurencin','Charlotte','Un loup en Hiver'), ('Niven', 'David','Lavigna');
+
+SELECT * FROM BORROW;
+
+SELECT EMPLOYE.EMP_FirstName,BOR_LIVRE 
+FROM EMPLOYE, BORROW
+WHERE EMP_LastName = BOR_LastName;
